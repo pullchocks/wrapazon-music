@@ -28,10 +28,12 @@ if [[ -z "${WAYLAND_DISPLAY:-}" && -n "${XDG_RUNTIME_DIR:-}" ]]; then
 fi
 
 install_desktop_entry() {
-  local apps icons
+  local apps icons bindir
   apps="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
   icons="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable/apps"
-  mkdir -p "$apps" "$icons"
+  bindir="${XDG_BIN_HOME:-$HOME/.local/bin}"
+  mkdir -p "$apps" "$icons" "$bindir"
+  ln -sfn "$APP_DIR/wrapazon" "$bindir/wrapazon"
   cp -f "$APP_DIR/assets/wrapazon.svg" "$icons/wrapazon-music.svg"
   cat > "$apps/wrapazon-music.desktop" <<EOF
 [Desktop Entry]
