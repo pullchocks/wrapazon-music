@@ -208,9 +208,10 @@ document.addEventListener(
   true
 );
 
-const SPLASH_TEXT = "Wrapazon Music by pullchocks";
 const SPLASH_FONT =
   '"AmazonEmber-Regular", "Amazon Ember", "EmberModernDisplayStd-Regular", "Ember", sans-serif';
+const SPLASH_HOLD_MS = 700;
+const SPLASH_FADE_MS = 280;
 
 function pageFont() {
   const ember = [];
@@ -253,40 +254,125 @@ function showSplash() {
       justify-content: center;
       box-sizing: border-box;
       margin: 0;
-      padding: 32px;
-      background: #101414;
+      padding: 24px;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 42%, rgba(26, 210, 251, 0.18), transparent 62%),
+        radial-gradient(ellipse 90% 70% at 50% 100%, rgba(255, 153, 0, 0.08), transparent 55%),
+        linear-gradient(165deg, #0a0e0e 0%, #101414 48%, #0d1214 100%);
       color: #f4f7f7;
-      text-align: center;
       font-family: ${SPLASH_FONT};
-      font-size: 28px;
-      font-weight: 400;
-      line-height: 1.3;
-      letter-spacing: 0;
       cursor: pointer;
+      opacity: 1;
+      transition: opacity ${SPLASH_FADE_MS}ms ease;
+    }
+    #wrapazon-splash.wrapazon-splash-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #wrapazon-splash .wrapazon-splash-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      transform: translateY(6px) scale(0.96);
+      opacity: 0;
+      animation: wrapazon-splash-in 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes wrapazon-splash-in {
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+    #wrapazon-splash .wrapazon-splash-mark {
+      width: 72px;
+      height: 72px;
+      filter: drop-shadow(0 0 18px rgba(26, 210, 251, 0.35));
+    }
+    #wrapazon-splash .wrapazon-splash-mark .ring {
+      stroke-dasharray: 226;
+      stroke-dashoffset: 226;
+      animation: wrapazon-ring 480ms ease-out 40ms forwards;
+    }
+    @keyframes wrapazon-ring {
+      to { stroke-dashoffset: 0; }
+    }
+    #wrapazon-splash .wrapazon-splash-title {
+      margin: 0;
+      font-size: clamp(22px, 3.6vw, 30px);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+      text-align: center;
+    }
+    #wrapazon-splash .wrapazon-splash-title span {
+      color: #1ad2fb;
+    }
+    #wrapazon-splash .wrapazon-splash-by {
+      margin: -6px 0 0;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(244, 247, 247, 0.55);
+    }
+    #wrapazon-splash .wrapazon-eq {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 22px;
+      margin-top: 2px;
+    }
+    #wrapazon-splash .wrapazon-eq i {
+      display: block;
+      width: 4px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #1ad2fb, #ff9900);
+      transform-origin: bottom;
+      animation: wrapazon-eq 520ms ease-in-out infinite alternate;
+    }
+    #wrapazon-splash .wrapazon-eq i:nth-child(1) { height: 8px; animation-delay: 0ms; }
+    #wrapazon-splash .wrapazon-eq i:nth-child(2) { height: 16px; animation-delay: 70ms; }
+    #wrapazon-splash .wrapazon-eq i:nth-child(3) { height: 22px; animation-delay: 140ms; }
+    #wrapazon-splash .wrapazon-eq i:nth-child(4) { height: 12px; animation-delay: 210ms; }
+    #wrapazon-splash .wrapazon-eq i:nth-child(5) { height: 18px; animation-delay: 280ms; }
+    @keyframes wrapazon-eq {
+      from { transform: scaleY(0.45); opacity: 0.7; }
+      to { transform: scaleY(1); opacity: 1; }
     }
   `;
 
   const splash = document.createElement("div");
   splash.id = "wrapazon-splash";
-  splash.textContent = SPLASH_TEXT;
+  splash.setAttribute("role", "presentation");
+  splash.innerHTML = `
+    <div class="wrapazon-splash-inner">
+      <svg class="wrapazon-splash-mark" viewBox="0 0 128 128" aria-hidden="true">
+        <circle class="ring" cx="64" cy="66" r="36" fill="none" stroke="#1ad2fb" stroke-width="8"/>
+        <circle cx="64" cy="66" r="7" fill="#1ad2fb"/>
+        <path d="M78 28c8 6 14 16 16 28" fill="none" stroke="#f4f7f7" stroke-width="8" stroke-linecap="round"/>
+        <path d="M92 24l8 16-18 2z" fill="#f4f7f7"/>
+      </svg>
+      <p class="wrapazon-splash-title">Wrapazon <span>Music</span></p>
+      <p class="wrapazon-splash-by">by pullchocks</p>
+      <div class="wrapazon-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  `;
 
   let removed = false;
+  let timer = 0;
   const dismiss = () => {
     if (removed) return;
     removed = true;
-    splash.remove();
-    style.remove();
+    window.clearTimeout(timer);
+    splash.classList.add("wrapazon-splash-out");
+    window.setTimeout(() => {
+      splash.remove();
+      style.remove();
+    }, SPLASH_FADE_MS);
   };
 
   splash.addEventListener("click", dismiss);
-  const timer = window.setTimeout(dismiss, 2000);
-  splash.addEventListener(
-    "click",
-    () => {
-      window.clearTimeout(timer);
-    },
-    { once: true }
-  );
+  timer = window.setTimeout(dismiss, SPLASH_HOLD_MS);
 
   const applyFont = () => {
     splash.style.fontFamily = pageFont();
