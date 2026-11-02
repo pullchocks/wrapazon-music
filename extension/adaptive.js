@@ -210,8 +210,8 @@ document.addEventListener(
 
 const SPLASH_FONT =
   '"AmazonEmber-Regular", "Amazon Ember", "EmberModernDisplayStd-Regular", "Ember", sans-serif';
-const SPLASH_HOLD_MS = 700;
-const SPLASH_FADE_MS = 280;
+const SPLASH_HOLD_MS = 1400;
+const SPLASH_FADE_MS = 320;
 
 function pageFont() {
   const ember = [];
