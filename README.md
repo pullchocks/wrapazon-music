@@ -12,4 +12,4 @@ Chromium must be installed at `/usr/lib/chromium/chromium`. To use another binar
 
 The first time you run `./wrapazon` from the project, it adds Wrapazon Music to your application menu and installs a symlink at `~/.local/bin/wrapazon`. After that, the `wrapazon` command works when `~/.local/bin` is on your PATH.
 
-Your login stays in `~/.local/share/wrapazon-music`. That folder is not in this repository, and it must never be committed.
+Your login stays in the local data folder `~/.local/share/wrapazon-music`.
