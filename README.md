@@ -1,13 +1,15 @@
 # Wrapazon Music
 
-Amazon Music in its own window. Sign in once and the session stays on this computer. The player uses the full window, and the layout still tightens when the window is narrow.
+Amazon Music in its own window. Sign in once, and the session stays on this computer.
 
 ## Run
+
+Chromium must be installed.
 
 ```bash
 ./wrapazon
 ```
 
-The first launch installs a Wrapazon Music entry in your application menu. Chromium has to be installed.
+The first launch adds Wrapazon Music to your application menu.
 
-Your login stays in a private profile under `~/.local/share/wrapazon-music`. That profile is not part of this repository.
+Your login stays in `~/.local/share/wrapazon-music`. That folder is not in this repository, and it must never be committed.
