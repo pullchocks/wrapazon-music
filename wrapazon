@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+# Wrapazon Music: Amazon Music in its own window, with a profile that stays signed in.
+set -euo pipefail
+
+APP_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+PROFILE="${WRAPAZON_PROFILE:-${XDG_DATA_HOME:-$HOME/.local/share}/wrapazon-music}"
+CHROME="${WRAPAZON_CHROME:-/usr/lib/chromium/chromium}"
+URL="${WRAPAZON_URL:-https://music.amazon.com/}"
+APP_CLASS="wrapazon-music"
+WINDOW_CLASS="chrome-music.amazon.com__-Default"
+
+die() {
+  printf 'wrapazon: %s\n' "$*" >&2
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "Wrapazon Music" "$*" || true
+  fi
+  exit 1
+}
+
+[[ -x "$CHROME" ]] || die "Chromium is not installed at $CHROME"
+
+if [[ -z "${WAYLAND_DISPLAY:-}" && -n "${XDG_RUNTIME_DIR:-}" ]]; then
+  for sock in "$XDG_RUNTIME_DIR"/wayland-*; do
+    [[ -S "$sock" ]] || continue
+    export WAYLAND_DISPLAY="${sock##*/}"
+    break
+  done
+fi
+
+install_desktop_entry() {
+  local apps icons
+  apps="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+  icons="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable/apps"
+  mkdir -p "$apps" "$icons"
+  cp -f "$APP_DIR/assets/wrapazon.svg" "$icons/wrapazon-music.svg"
+  cat > "$apps/wrapazon-music.desktop" <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Wrapazon Music
+GenericName=Music Player
+Comment=Amazon Music that stays signed in and fits the window
+Exec="$APP_DIR/wrapazon"
+Icon=wrapazon-music
+Terminal=false
+Categories=Audio;Music;Player;AudioVideo;
+Keywords=Amazon;Music;Wrapazon;
+StartupNotify=true
+StartupWMClass=$WINDOW_CLASS
+EOF
+  if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database "$apps" >/dev/null 2>&1 || true
+  fi
+  if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -f -t "${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor" >/dev/null 2>&1 || true
+  fi
+}
+
+seed_profile() {
+  mkdir -p "$PROFILE/Default"
+  if [[ ! -f "$PROFILE/Default/Preferences" ]]; then
+    cat > "$PROFILE/Default/Preferences" <<'EOF'
+{
+  "browser": {
+    "check_default_browser": false
+  },
+  "profile": {
+    "exit_type": "Normal",
+    "exited_cleanly": true,
+    "default_content_setting_values": {
+      "sound": 1,
+      "protected_media_identifier": 1
+    },
+    "password_manager_enabled": true
+  },
+  "credentials_enable_service": true,
+  "enable_do_not_track": false
+}
+EOF
+  fi
+}
+
+seed_widevine() {
+  local src="$HOME/.config/chromium/WidevineCdm"
+  local dst="$PROFILE/WidevineCdm"
+  [[ -d "$src" ]] || return 0
+  local src_ver="" dst_ver=""
+  [[ -f "$src/latest-component-updated-widevine-cdm" ]] && src_ver="$(cat "$src/latest-component-updated-widevine-cdm")"
+  [[ -f "$dst/latest-component-updated-widevine-cdm" ]] && dst_ver="$(cat "$dst/latest-component-updated-widevine-cdm")"
+  if [[ ! -d "$dst" || ( -n "$src_ver" && "$src_ver" != "$dst_ver" ) ]]; then
+    rm -rf "$dst"
+    cp -a "$src" "$dst"
+  fi
+}
+
+running_pid() {
+  local link pid
+  [[ -L "$PROFILE/SingletonLock" ]] || return 1
+  link="$(readlink "$PROFILE/SingletonLock")"
+  pid="${link##*-}"
+  [[ "$pid" =~ ^[0-9]+$ ]] || return 1
+  [[ -d "/proc/$pid" ]] || return 1
+  printf '%s\n' "$pid"
+}
+
+focus_running() {
+  command -v hyprctl >/dev/null 2>&1 || return 1
+  # Hyprland 0.56 takes a window object. Older builds still accept a class regex.
+  hyprctl eval 'local w = hl.get_window("class:chrome-music.amazon.com__-Default"); if w then hl.dsp.focus({ window = w }) end' >/dev/null 2>&1 && return 0
+  hyprctl dispatch focuswindow "class:^(chrome-music\\.amazon\\.com__-Default)$" >/dev/null 2>&1 && return 0
+  return 1
+}
+
+install_desktop_entry
+seed_profile
+seed_widevine
+
+if running_pid >/dev/null; then
+  focus_running || true
+  exit 0
+fi
+
+args=(
+  --user-data-dir="$PROFILE"
+  --class="$WINDOW_CLASS"
+  --name="$WINDOW_CLASS"
+  --app="$URL"
+  --no-first-run
+  --no-default-browser-check
+  --disable-sync
+  --disable-translate
+  --disable-session-crashed-bubble
+  --hide-crash-restore-bubble
+  --autoplay-policy=no-user-gesture-required
+  --password-store=gnome-libsecret
+  --enable-features=WidevineCdm,HardwareMediaKeyHandling
+  --disable-features=Translate,MediaRouter,ChromeWhatsNewUI,OfferPinToTaskbarInfoBar
+  --load-extension="$APP_DIR/extension"
+  --window-size=1280,800
+)
+
+if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+  args+=(--ozone-platform=wayland --ozone-platform-hint=wayland)
+fi
+
+if [[ -n "${WRAPAZON_CHROME_ARGS:-}" ]]; then
+  # Intentional split: test launches pass extra flags without spaces.
+  # shellcheck disable=SC2206
+  extra=(${WRAPAZON_CHROME_ARGS})
+  args+=("${extra[@]}")
+fi
+
+export CHROME_DESKTOP="${APP_CLASS}.desktop"
+exec "$CHROME" "${args[@]}"

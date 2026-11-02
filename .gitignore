@@ -1,0 +1,14 @@
+# Local browser profile, login, and playback secrets. Never commit these.
+profile/
+.profile/
+WidevineCdm/
+**/WidevineCdm/
+**/Cookies
+**/Cookies-journal
+Local State
+**/Singleton*
+*.pem
+.env
+.env.*
+credentials.json
+*.log

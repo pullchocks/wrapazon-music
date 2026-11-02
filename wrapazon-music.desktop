@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Wrapazon Music
+GenericName=Music Player
+Comment=Amazon Music that stays signed in and fits the window
+Exec=wrapazon
+Icon=wrapazon-music
+Terminal=false
+Categories=Audio;Music;Player;AudioVideo;
+Keywords=Amazon;Music;Wrapazon;
+StartupNotify=true
+StartupWMClass=chrome-music.amazon.com__-Default

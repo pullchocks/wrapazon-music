@@ -1,0 +1,97 @@
+/* Fit Amazon Music into whatever tile Hyprland gives the window.
+   Selectors are stable ids and asset URLs. Hashed class names are not. */
+
+html,
+body,
+#container,
+#app-chrome-container,
+#chrome-root,
+#main_content,
+#root,
+music-app {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+html {
+  color-scheme: dark;
+}
+
+#music-navbar,
+#transport-overlay {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+#music-navbar ul {
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+#navbarSearchInput,
+#navbarSearchInputShadow {
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+[data-wrapazon-hidden="get-app"] {
+  display: none !important;
+}
+
+/* Amazon caps the signed-in shell at 1600px. A stylesheet important rule
+   beats that inline value, including when the page rewrites the style. */
+#root [style*="max-width: 1600px"],
+#root [style*="max-width:1600px"],
+#music-navbar [style*="max-width: 1600px"],
+#music-navbar [style*="max-width:1600px"] {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+@media (max-width: 1279px) {
+  #navbarSearchInput {
+    width: min(220px, 28vw) !important;
+  }
+}
+
+@media (max-width: 839px) {
+  html,
+  body {
+    overflow-x: hidden !important;
+  }
+
+  #music-navbar {
+    overflow-x: auto !important;
+  }
+
+  #navbarMusicLogo img[src*="410x82"] {
+    display: none !important;
+  }
+
+  #navbarMusicLogo img[src*="white_stacked"] {
+    display: block !important;
+    height: 28px !important;
+    width: auto !important;
+  }
+
+  #navbarSearchInput {
+    width: min(140px, 32vw) !important;
+    max-width: 140px !important;
+  }
+
+  #signInButton,
+  #navbarMenuItemSearch {
+    flex: 0 0 auto !important;
+  }
+}
+
+@media (max-width: 479px) {
+  #navbarSearchInput {
+    width: 72px !important;
+    max-width: 72px !important;
+  }
+
+  #music-navbar ul > li:first-child {
+    margin-inline-end: 8px !important;
+  }
+}

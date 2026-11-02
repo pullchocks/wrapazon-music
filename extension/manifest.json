@@ -1,0 +1,90 @@
+{
+  "manifest_version": 3,
+  "name": "Wrapazon",
+  "version": "1.0.0",
+  "description": "Keeps Amazon Music signed in and fits the player to the window.",
+  "permissions": ["cookies", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://music.amazon.com/*",
+        "*://music.amazon.co.uk/*",
+        "*://music.amazon.de/*",
+        "*://music.amazon.co.jp/*",
+        "*://music.amazon.ca/*",
+        "*://music.amazon.com.au/*",
+        "*://music.amazon.fr/*",
+        "*://music.amazon.it/*",
+        "*://music.amazon.es/*",
+        "*://music.amazon.in/*",
+        "*://music.amazon.com.br/*",
+        "*://music.amazon.com.mx/*"
+      ],
+      "js": ["adaptive.js"],
+      "css": ["adaptive.css"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*.amazon.com/*",
+        "*://*.amazon.co.uk/*",
+        "*://*.amazon.ca/*",
+        "*://*.amazon.de/*",
+        "*://*.amazon.co.jp/*",
+        "*://*.amazon.com.au/*",
+        "*://*.amazon.fr/*",
+        "*://*.amazon.it/*",
+        "*://*.amazon.es/*",
+        "*://*.amazon.in/*",
+        "*://*.amazon.com.br/*",
+        "*://*.amazon.com.mx/*",
+        "*://*.amazon.nl/*",
+        "*://*.amazon.pl/*",
+        "*://*.amazon.se/*",
+        "*://*.amazon.ae/*",
+        "*://*.amazon.sg/*",
+        "*://*.amazon.sa/*",
+        "*://*.amazon.com.tr/*",
+        "*://*.amazon.eg/*"
+      ],
+      "js": ["keep-session.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://www.amazon.com/*",
+        "*://www.amazon.co.uk/*",
+        "*://www.amazon.ca/*",
+        "*://www.amazon.de/*",
+        "*://www.amazon.co.jp/*",
+        "*://www.amazon.com.au/*",
+        "*://www.amazon.fr/*",
+        "*://www.amazon.it/*",
+        "*://www.amazon.es/*",
+        "*://www.amazon.in/*",
+        "*://www.amazon.com.br/*",
+        "*://www.amazon.com.mx/*",
+        "*://www.amazon.nl/*",
+        "*://www.amazon.pl/*",
+        "*://www.amazon.se/*",
+        "*://www.amazon.ae/*",
+        "*://www.amazon.sg/*",
+        "*://www.amazon.sa/*",
+        "*://www.amazon.com.tr/*",
+        "*://www.amazon.eg/*",
+        "*://amazon.com/*",
+        "*://amazon.co.uk/*",
+        "*://amazon.ca/*",
+        "*://amazon.de/*",
+        "*://amazon.co.jp/*",
+        "*://amazon.com.au/*"
+      ],
+      "css": ["login.css"],
+      "run_at": "document_start"
+    }
+  ]
+}

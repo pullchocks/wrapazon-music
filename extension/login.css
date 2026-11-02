@@ -1,0 +1,20 @@
+/* The sign-in pages are a separate site. Keep the form inside a narrow tile. */
+
+@media (max-width: 839px) {
+  html,
+  body {
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  #authportal-center-section,
+  .auth-workflow,
+  #ap_login_form,
+  #auth-email-claim,
+  #auth-password-claim {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: auto !important;
+    box-sizing: border-box !important;
+  }
+}
