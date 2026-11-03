@@ -208,7 +208,7 @@ document.addEventListener(
   true
 );
 
-const SPLASH_TEXT = "Wrapazon Music by pullchocks";
+const SPLASH_TEXT = "Wrapazon Music";
 const SPLASH_FONT =
   '"AmazonEmber-Regular", "Amazon Ember", "EmberModernDisplayStd-Regular", "Ember", sans-serif';
 

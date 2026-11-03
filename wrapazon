@@ -3,6 +3,9 @@
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+if [[ ! -d "$APP_DIR/extension" && -d /usr/share/wrapazon-music/extension ]]; then
+  APP_DIR=/usr/share/wrapazon-music
+fi
 PROFILE="${WRAPAZON_PROFILE:-${XDG_DATA_HOME:-$HOME/.local/share}/wrapazon-music}"
 CHROME="${WRAPAZON_CHROME:-/usr/lib/chromium/chromium}"
 URL="${WRAPAZON_URL:-https://music.amazon.com/}"
@@ -113,7 +116,10 @@ focus_running() {
   return 1
 }
 
-install_desktop_entry
+# A system package already ships the command, icon, and menu entry.
+if [[ "$APP_DIR" != /usr/share/wrapazon-music ]]; then
+  install_desktop_entry
+fi
 seed_profile
 seed_widevine
 
