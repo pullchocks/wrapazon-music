@@ -12,7 +12,7 @@ optdepends=(
   'libsecret: save the Amazon password in the keyring'
 )
 source=("$pkgname-$pkgver.tar.gz::https://github.com/pullchocks/wrapazon-music/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('89ce362b3038b9b2a8fc6d2c650514e57b1a306edcab8b5619f5fe7e74b83b84')
 
 package() {
   cd "$pkgname-$pkgver"

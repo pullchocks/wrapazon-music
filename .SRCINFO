@@ -1,0 +1,15 @@
+pkgbase = wrapazon-music
+	pkgdesc = Amazon Music in its own window
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://github.com/pullchocks/wrapazon-music
+	arch = any
+	license = MIT
+	depends = bash
+	depends = chromium
+	optdepends = libnotify: show an error when Chromium is missing
+	optdepends = libsecret: save the Amazon password in the keyring
+	source = wrapazon-music-1.0.0.tar.gz::https://github.com/pullchocks/wrapazon-music/archive/refs/tags/v1.0.0.tar.gz
+	sha256sums = 89ce362b3038b9b2a8fc6d2c650514e57b1a306edcab8b5619f5fe7e74b83b84
+
+pkgname = wrapazon-music
